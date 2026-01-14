@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { initAnalytics } from "@/lib/analytics";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -33,18 +34,11 @@ export async function POST(req: Request) {
         Key: key,
         Body: buffer,
         ContentType: file.type,
-        CacheControl: "public, max-age=31536000",
       })
     );
 
-    // 2️⃣ INIT analytics (REQUIRED FOR TASK 1)
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/analytics/init`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ key }),
-    });
+    // 2️⃣ Init analytics directly (NO HTTP)
+    await initAnalytics(key);
 
     return NextResponse.json({ key });
   } catch (err) {
