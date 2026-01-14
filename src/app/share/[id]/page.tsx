@@ -1,36 +1,44 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
 export default function SharePage() {
   const { id } = useParams();
   const key = decodeURIComponent(id as string);
+
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hasTrackedView = useRef(false);
+
   const [copied, setCopied] = useState(false);
 
   const videoURL = `https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
 
-  // 🔥 VIEW TRACK
-  useEffect(() => {
+  // ✅ VIEW TRACK — only when video actually plays
+  const onPlay = () => {
+    if (hasTrackedView.current) return;
+    hasTrackedView.current = true;
+
     fetch("/api/analytics/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    });
-  }, [key]);
+    }).catch(() => {});
+  };
 
-  // 🔥 COMPLETION TRACK
+  // ✅ COMPLETION TRACK — already correct
   const onEnded = () => {
     fetch("/api/analytics/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    });
+    }).catch(() => {});
   };
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(videoURL);
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/share/${encodeURIComponent(key)}`
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -48,6 +56,7 @@ export default function SharePage() {
           className="video-preview"
           src={videoURL}
           controls
+          onPlay={onPlay}
           onEnded={onEnded}
         />
 
