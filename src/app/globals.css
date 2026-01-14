@@ -1,26 +1,348 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* =========================
+   BASE
+========================= */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #f5f7fb;
+  color: #111;
+}
+
+/* =========================
+   RECORD & TRIM LAYOUT
+========================= */
+.record-wrapper,
+.trim-container,
+.page-center {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+/* =========================
+   CARDS
+========================= */
+.record-card,
+.trim-container {
+  background: white;
+  width: 100%;
+  max-width: 420px; /* 🔥 FIXED (was 900px) */
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   HEADINGS
+========================= */
+h1 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   VIDEO
+========================= */
+.preview,
+.video-preview {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  background: black;
+}
+
+/* =========================
+   PLACEHOLDER
+========================= */
+.placeholder {
+  height: 220px;
+  border-radius: 12px;
+  background: #eef1f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.actions,
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.btn.success {
+  background: #16a34a;
+  color: white;
+}
+
+.btn.secondary {
+  background: #e5e7eb;
+  color: #111;
+}
+
+.btn.danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   TRIM CONTROLS
+========================= */
+.time-controls {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.time-controls > div {
+  flex: 1;
+}
+
+.time-controls label {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.time-controls input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+/* ===== Trim Page Adjustments ===== */
+.trim-card {
+  max-width: 420px;
+}
+
+.time-controls {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+}
+
+.action-row .btn {
+  flex: 1;
+}
+/* ===== Share Page ===== */
+.share-card {
+  max-width: 420px;
+}
+
+.video-preview {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+}
+
+.action-row .btn {
+  flex: 1;
+}
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  color: #555;
+}
+
+.features li {
+  margin-bottom: 6px;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #333;
+}
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fc;
+  padding: 24px;
+}
+
+.hero {
+  background: #fff;
+  max-width: 520px;
+  width: 100%;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.brand {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 1.05rem;
+  margin-bottom: 20px;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+}
+
+.features li {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.action-row {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: #fff;
+  flex: 1;
+}
+
+.btn.primary:hover {
+  background: #1e4ed8;
+}
+
+.btn.ghost {
+  border: 1px solid #e5e7eb;
+  color: #333;
+  background: #fff;
+}
+
+.btn.ghost:hover {
+  background: #f1f5f9;
+}
+.demo-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-views {
+  font-size: 0.85rem;
+  color: #666;
+}
+/* =========================
+   HOME PAGE — SAFE OVERRIDES
+========================= */
+
+.home-page .home-card {
+  background: #fff;
+  max-width: 420px;
+  width: 100%;
+  padding: 36px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Home-specific subtitle (avoid collision) */
+.home-page .subtitle {
+  margin-bottom: 18px;
+}
+
+/* Home features — override shared .features */
+.home-page .feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 26px;
+}
+
+.home-page .feature-list li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Home actions — isolate from global .action-row */
+.home-page .home-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Demo button + views lock */
+.home-page .demo-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-page .demo-views {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
 }
