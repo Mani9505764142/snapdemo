@@ -74,8 +74,8 @@ export default function TrimPage() {
       return;
     }
 
-    const video = videoRef.current;
-    const stream = (video as any).captureStream();
+    const video = videoRef.current as CaptureVideoElement;
+    const stream = video.captureStream();
     const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
     const chunks: Blob[] = [];
 
