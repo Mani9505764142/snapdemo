@@ -75,10 +75,13 @@ export default function TrimPage() {
     }
 
     // ✅ FIXED TYPE — THIS WAS THE BUILD BREAKER
-    const video = videoRef.current as HTMLVideoElement;
-    if (!video) return;
+   const video = videoRef.current as (HTMLVideoElement & {
+   captureStream: () => MediaStream;
+    });
+     if (!video) return;
 
-    const stream = video.captureStream();
+const stream = video.captureStream();
+
     const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
     const chunks: Blob[] = [];
 
