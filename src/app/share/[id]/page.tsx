@@ -4,19 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
 export default function SharePage() {
-  const { id } = useParams();
-  const key = decodeURIComponent(id as string);
+  const params = useParams();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const id = params?.id;
+  if (!id || typeof id !== "string") {
+    return null; // ⛔ prevents build/runtime crash
+  }
+
+  const key = decodeURIComponent(id);
+
   const hasTrackedView = useRef(false);
-
   const [copied, setCopied] = useState(false);
 
   const videoURL = `https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
 
-  // ✅ VIEW TRACK — once per page open
   useEffect(() => {
-    if (!key || hasTrackedView.current) return;
+    if (hasTrackedView.current) return;
 
     hasTrackedView.current = true;
 
@@ -24,24 +27,17 @@ export default function SharePage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("View tracking failed");
-      })
-      .catch((err) => {
-        console.error("View tracking error:", err);
-      });
+    }).catch((err) => {
+      console.error("View tracking failed", err);
+    });
   }, [key]);
 
-  // ✅ COMPLETION TRACK — only when video finishes
   const onEnded = () => {
     fetch("/api/analytics/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    }).catch((err) => {
-      console.error("Completion tracking error:", err);
-    });
+    }).catch(() => {});
   };
 
   const copyLink = async () => {
@@ -56,12 +52,8 @@ export default function SharePage() {
     <div className="record-wrapper">
       <div className="record-card share-card">
         <h1>Your video is ready</h1>
-        <p className="subtitle">
-          Share this link with anyone. It works on any device.
-        </p>
 
         <video
-          ref={videoRef}
           className="video-preview"
           src={videoURL}
           controls
