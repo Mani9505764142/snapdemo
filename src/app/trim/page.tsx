@@ -74,7 +74,10 @@ export default function TrimPage() {
       return;
     }
 
-    const video = videoRef.current as CaptureVideoElement;
+    // ✅ FIXED TYPE — THIS WAS THE BUILD BREAKER
+    const video = videoRef.current as HTMLVideoElement;
+    if (!video) return;
+
     const stream = video.captureStream();
     const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
     const chunks: Blob[] = [];
@@ -125,63 +128,62 @@ export default function TrimPage() {
   // ---------- UI ----------
   return (
     <div className="record-wrapper">
-   <div className="record-card trim-card">
+      <div className="record-card trim-card">
+        <h1>Trim Video</h1>
+        <p className="subtitle">Trim your recording or upload it as-is</p>
 
-      <h1>Trim Video</h1>
-      <p className="subtitle">Trim your recording or upload it as-is</p>
+        <video
+          ref={videoRef}
+          src={videoURL}
+          controls
+          className="video-preview"
+          onLoadedMetadata={(e) =>
+            setEnd(Math.floor((e.target as HTMLVideoElement).duration))
+          }
+        />
 
-      <video
-        ref={videoRef}
-        src={videoURL}
-        controls
-        className="video-preview"
-        onLoadedMetadata={(e) =>
-          setEnd(Math.floor((e.target as HTMLVideoElement).duration))
-        }
-      />
+        <div className="time-controls">
+          <div>
+            <label>Start (sec)</label>
+            <input
+              type="number"
+              min={0}
+              value={start}
+              onChange={(e) => setStart(+e.target.value)}
+              disabled={processing}
+            />
+          </div>
 
-      <div className="time-controls">
-        <div>
-          <label>Start (sec)</label>
-          <input
-            type="number"
-            min={0}
-            value={start}
-            onChange={(e) => setStart(+e.target.value)}
-            disabled={processing}
-          />
+          <div>
+            <label>End (sec)</label>
+            <input
+              type="number"
+              min={0}
+              value={end}
+              onChange={(e) => setEnd(+e.target.value)}
+              disabled={processing}
+            />
+          </div>
         </div>
 
-        <div>
-          <label>End (sec)</label>
-          <input
-            type="number"
-            min={0}
-            value={end}
-            onChange={(e) => setEnd(+e.target.value)}
+        <div className="action-row">
+          <button
+            className="btn secondary"
+            onClick={uploadOriginal}
             disabled={processing}
-          />
+          >
+            Upload Without Trim
+          </button>
+
+          <button
+            className="btn primary"
+            onClick={trimAndUpload}
+            disabled={processing}
+          >
+            {processing ? "Processing…" : "Trim & Upload"}
+          </button>
         </div>
-      </div>
-
-      <div className="action-row">
-        <button
-          className="btn secondary"
-          onClick={uploadOriginal}
-          disabled={processing}
-        >
-          Upload Without Trim
-        </button>
-
-        <button
-          className="btn primary"
-          onClick={trimAndUpload}
-          disabled={processing}
-        >
-          {processing ? "Processing…" : "Trim & Upload"}
-        </button>
       </div>
     </div>
-</div>
   );
 }
