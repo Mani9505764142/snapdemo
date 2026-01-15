@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
 export default function SharePage() {
@@ -14,25 +14,34 @@ export default function SharePage() {
 
   const videoURL = `https://${process.env.NEXT_PUBLIC_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
 
-  // ✅ VIEW TRACK — only when video actually plays
-  const onPlay = () => {
-    if (hasTrackedView.current) return;
+  // ✅ VIEW TRACK — once per page open
+  useEffect(() => {
+    if (!key || hasTrackedView.current) return;
+
     hasTrackedView.current = true;
 
     fetch("/api/analytics/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    }).catch(() => {});
-  };
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("View tracking failed");
+      })
+      .catch((err) => {
+        console.error("View tracking error:", err);
+      });
+  }, [key]);
 
-  // ✅ COMPLETION TRACK — already correct
+  // ✅ COMPLETION TRACK — only when video finishes
   const onEnded = () => {
     fetch("/api/analytics/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key }),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error("Completion tracking error:", err);
+    });
   };
 
   const copyLink = async () => {
@@ -56,7 +65,6 @@ export default function SharePage() {
           className="video-preview"
           src={videoURL}
           controls
-          onPlay={onPlay}
           onEnded={onEnded}
         />
 
