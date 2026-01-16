@@ -26,7 +26,7 @@ export default function Home() {
               href="/share/videos%2F1768378601579-video.webm"
               className="btn ghost"
             >
-              View Demo
+              View Sample
             </Link>
 
             <span className="demo-views">👀 Viewed 8 times</span>
