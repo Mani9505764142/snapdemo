@@ -65,7 +65,7 @@ export default function TrimPage() {
     await uploadBlob(blob);
   };
 
-  // ---------- TRIM & UPLOAD ----------
+  // ---------- TRIM & UPLOAD (FIXED) ----------
   const trimAndUpload = async () => {
     if (!videoRef.current || !window.__RECORDED_VIDEO__) return;
 
@@ -74,14 +74,11 @@ export default function TrimPage() {
       return;
     }
 
-    // ✅ FIXED TYPE — THIS WAS THE BUILD BREAKER
-   const video = videoRef.current as (HTMLVideoElement & {
-   captureStream: () => MediaStream;
-    });
-     if (!video) return;
+    const video = videoRef.current as HTMLVideoElement & {
+      captureStream: () => MediaStream;
+    };
 
-const stream = video.captureStream();
-
+    const stream = video.captureStream();
     const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
     const chunks: Blob[] = [];
 
@@ -100,15 +97,13 @@ const stream = video.captureStream();
     await video.play();
     recorder.start();
 
-    const stopAtEnd = () => {
-      if (video.currentTime >= end) {
-        recorder.stop();
-        video.pause();
-        video.removeEventListener("timeupdate", stopAtEnd);
-      }
-    };
+    // 🔥 RELIABLE STOP — NO timeupdate
+    const durationMs = (end - start) * 1000;
 
-    video.addEventListener("timeupdate", stopAtEnd);
+    setTimeout(() => {
+      recorder.stop();
+      video.pause();
+    }, durationMs);
   };
 
   // ---------- NO VIDEO GUARD ----------
